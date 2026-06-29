@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Regulate</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #14141f;
+      --surface-2: #1e1e2e;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --text-muted: #8888a0;
+      --accent: #6c5ce7;
+      --accent-glow: rgba(108, 92, 231, 0.3);
+      --calm: #00b894;
+      --calm-glow: rgba(0, 184, 148, 0.3);
+      --alert: #e17055;
+      --alert-glow: rgba(225, 112, 85, 0.3);
+      --warm: #fdcb6e;
+      --gold: #d4a855;
+      --gold-glow: rgba(212, 168, 85, 0.3);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      min-height: 100dvh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--calm));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo.leader-logo {
+      background: linear-gradient(135deg, var(--gold), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .back-btn:hover { color: var(--text); }
+
+    .greeting {
+      margin-top: 40px;
+      margin-bottom: 8px;
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    /* Mode selector */
+    .mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .mode-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    .mode-card:hover {
+      transform: translateY(-2px);
+    }
+    .mode-card.selected {
+      box-shadow: 0 0 25px var(--accent-glow);
+    }
+    .mode-card.selected.mode-personal {
+      border-color: var(--accent);
+      background: rgba(108, 92, 231, 0.08);
+    }
+    .mode-card.selected.mode-leader {
+      border-color: var(--gold);
+      background: rgba(212, 168, 85, 0.08);
+    }
+    .mode-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    .mode-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .mode-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Biometrics card */
+    .bio-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .bio-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      opacity: 0.3;
+    }
+    .bio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .bio-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+    .bio-status {
+      font-size: 12px;
+      color: var(--calm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .bio-status .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--calm);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .bio-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      position: relative;
+    }
+    .metric { text-align: center; }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -1px;
+    }
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .metric-unit {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .hrv-wave {
+      margin-top: 20px;
+      position: relative;
+      height: 60px;
+    }
+    .hrv-wave svg { width: 100%; height: 100%; }
+    .hrv-line {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2;
+      filter: drop-shadow(0 0 6px var(--accent-glow));
+    }
+
+    .prompt-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .challenge-input-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .challenge-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .challenge-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .challenge-input::placeholder { color: var(--text-muted); }
+
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .tag:hover, .tag.selected {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(108, 92, 231, 0.1);
+    }
+    .tag.leader-tag:hover, .tag.leader-tag.selected {
+      border-color: var(--gold);
+      color: var(--text);
+      background: rgba(212, 168, 85, 0.1);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: auto;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-primary.btn-leader {
+      background: linear-gradient(135deg, var(--gold), #c49a3c);
+    }
+    .btn-primary.btn-leader:hover {
+      box-shadow: 0 8px 30px var(--gold-glow);
+    }
+
+    .emotion-prompt {
+      font-size: 22px;
+      font-weight: 300;
+      line-height: 1.5;
+      margin: 32px 0 12px;
+    }
+    .emotion-sub {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .emotion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .emotion-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .emotion-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .emotion-card.selected {
+      border-color: var(--accent);
+      background: rgba(108, 92, 231, 0.1);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .emotion-icon { font-size: 32px; margin-bottom: 8px; }
+    .emotion-name { font-size: 14px; font-weight: 500; }
+    .emotion-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .body-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .body-outline { width: 100%; height: 100%; }
+    .scan-instruction {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .scan-detail {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .intensity-section {
+      width: 100%;
+      margin-bottom: 32px;
+    }
+    .intensity-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .intensity-label span {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .intensity-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--surface-2);
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .breathe-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .breathe-circle-outer {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 40px;
+    }
+    .breathe-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      opacity: 0.2;
+    }
+    .breathe-ring.animated {
+      animation: breatheRing 8s ease-in-out infinite;
+    }
+    .breathe-ring:nth-child(2) { animation-delay: 0.5s; inset: 10px; }
+    .breathe-ring:nth-child(3) { animation-delay: 1s; inset: 20px; }
+    @keyframes breatheRing {
+      0%, 100% { transform: scale(0.8); opacity: 0.1; }
+      25% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1); opacity: 0.6; }
+      75% { transform: scale(0.8); opacity: 0.1; }
+    }
+    .breathe-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, var(--accent), #4a3db0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    .breathe-circle.active {
+      animation: breatheCircle 8s ease-in-out infinite;
+    }
+    @keyframes breatheCircle {
+      0%, 100% { transform: scale(0.7); }
+      25% { transform: scale(1); }
+      50% { transform: scale(1); }
+      75% { transform: scale(0.7); }
+    }
+    .breathe-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      text-align: center;
+    }
+    .breathe-timer {
+      font-size: 48px;
+      font-weight: 200;
+      letter-spacing: -2px;
+      margin-bottom: 8px;
+    }
+    .breathe-phase {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+    }
+    .breathe-progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 40px;
+    }
+    .breathe-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .breathe-dot.done { background: var(--accent); }
+
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .insight-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .insight-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .insight-icon.pattern { background: rgba(108, 92, 231, 0.15); }
+    .insight-icon.body { background: rgba(0, 184, 148, 0.15); }
+    .insight-icon.next { background: rgba(253, 203, 110, 0.15); }
+    .insight-icon.decision { background: rgba(212, 168, 85, 0.15); }
+    .insight-title { font-size: 15px; font-weight: 600; }
+    .insight-body {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .journal-input {
+      width: 100%;
+      min-height: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      resize: none;
+      margin-bottom: 16px;
+      transition: border-color 0.3s;
+    }
+    .journal-input:focus { border-color: var(--accent); }
+    .journal-input::placeholder { color: var(--text-muted); }
+
+    .complete-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .complete-check {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--calm), #55efc4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin-bottom: 24px;
+      animation: scaleIn 0.5s ease-out;
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    .complete-title {
+      font-size: 26px;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+    .complete-message {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 300px;
+      margin-bottom: 40px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+    .stat { text-align: center; }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--calm);
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      background: rgba(10, 10, 15, 0.9);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 28px;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      padding: 4px 16px;
+      transition: color 0.2s;
+    }
+    .nav-item.active { color: var(--accent); }
+    .nav-icon { font-size: 22px; }
+
+    .scrollable {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 100px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .scrollable::-webkit-scrollbar { display: none; }
+
+    .mt-32 { margin-top: 32px; }
+
+    .arousal-meter {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      padding: 16px 20px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .arousal-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--surface-2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .arousal-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease, background 1s ease;
+    }
+    .arousal-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      min-width: 60px;
+    }
+    .arousal-state {
+      font-size: 13px;
+      font-weight: 500;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* Leader-specific: Signal cards */
+    .signal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .signal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .signal-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+    .signal-card.selected {
+      border-color: var(--gold);
+      background: rgba(212, 168, 85, 0.08);
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+    .signal-icon { font-size: 28px; margin-bottom: 8px; }
+    .signal-name { font-size: 14px; font-weight: 500; }
+    .signal-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* Readiness gauge */
+    .readiness-gauge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 24px 0 32px;
+    }
+    .gauge-ring {
+      width: 180px;
+      height: 180px;
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .gauge-ring svg { width: 100%; height: 100%; }
+    .gauge-bg {
+      fill: none;
+      stroke: var(--surface-2);
+      stroke-width: 8;
+    }
+    .gauge-fill {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.5s ease, stroke 1s ease;
+    }
+    .gauge-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .gauge-value {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -1px;
+    }
+    .gauge-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    .readiness-verdict {
+      font-size: 18px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .readiness-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* Stakes selector */
+    .stakes-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .stake-btn {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    .stake-btn:hover { border-color: var(--gold); }
+    .stake-btn.selected {
+      border-color: var(--gold);
+      color: var(--text);
+      background: rgba(212, 168, 85, 0.08);
+    }
+
+    /* Hidden helper */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ==================== MODE SELECT SCREEN ==================== -->
+    <div class="screen active" id="screen-mode">
+      <div class="header">
+        <div class="logo">regulate</div>
+        <div style="font-size: 13px; color: var(--text-muted);">v0.2</div>
+      </div>
+
+      <div class="scrollable">
+        <div class="greeting">How do you want to work today?</div>
+        <div class="subtitle">Choose your path. Both build the same core skill — knowing what's happening in your body.</div>
+
+        <div class="mode-selector">
+          <div class="mode-card mode-personal" id="mode-personal" data-mode="personal">
+            <div class="mode-icon">🌊</div>
+            <div class="mode-title">Regulate</div>
+            <div class="mode-desc">Explore emotions, build presence, expand your window of tolerance</div>
+          </div>
+          <div class="mode-card mode-leader" id="mode-leader" data-mode="leader">
+            <div class="mode-icon">🧭</div>
+            <div class="mode-title">Discern</div>
+            <div class="mode-desc">Check in with your body before a decision. Lead from clarity, not reactivity</div>
+          </div>
+        </div>
+
+        <!-- Biometrics (shared) -->
+        <div class="bio-card">
+          <div class="bio-header">
+            <div class="bio-title">Live Biometrics</div>
+            <div class="bio-status"><span class="dot"></span> Connected</div>
+          </div>
+          <div class="bio-metrics">
+            <div class="metric">
+              <div class="metric-value" id="hrv-value">42 <span class="metric-unit">ms</span></div>
+              <div class="metric-label">HRV</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="hr-value">72 <span class="metric-unit">bpm</span></div>
+              <div class="metric-label">Heart Rate</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="resp-value">14 <span class="metric-unit">/m</span></div>
+              <div class="metric-label">Resp Rate</div>
+            </div>
+          </div>
+          <div class="hrv-wave">
+            <svg viewBox="0 0 380 60" preserveAspectRatio="none">
+              <path class="hrv-line" id="hrv-path" d="M0,30 Q20,30 40,30"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="arousal-meter">
+          <div class="arousal-label">Arousal</div>
+          <div class="arousal-bar-bg">
+            <div class="arousal-bar-fill" id="arousal-fill" style="width: 35%; background: var(--calm);"></div>
+          </div>
+          <div class="arousal-state" id="arousal-state" style="color: var(--calm);">Regulated</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PERSONAL: HOME ==================== -->
+    <div class="screen" id="screen-home">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('mode')">← Modes</button>
+        <div class="logo">regulate</div>
+      </div>
+
+      <div class="scrollable">
+        <div class="greeting">What's showing up?</div>
+        <div class="subtitle">Name a challenge, and we'll explore what's underneath it together.</div>
+
+        <div class="prompt-section">
+          <div class="section-label">What's the challenge?</div>
+          <div class="challenge-input-wrap">
+            <input type="text" class="challenge-input" id="challenge-input"
+              placeholder="e.g. I keep putting off this conversation...">
+          </div>
+          <div class="quick-tags" id="personal-tags">
+            <div class="tag" data-challenge="Procrastination">Procrastination</div>
+            <div class="tag" data-challenge="Overthinking">Overthinking</div>
+            <div class="tag" data-challenge="People pleasing">People pleasing</div>
+            <div class="tag" data-challenge="Avoidance">Avoidance</div>
+            <div class="tag" data-challenge="Perfectionism">Perfectionism</div>
+            <div class="tag" data-challenge="Anger">Anger</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-explore" disabled>Explore this</button>
+    </div>
+
+    <!-- ==================== PERSONAL: EMOTION ==================== -->
+    <div class="screen" id="screen-emotion">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('home')">← Back</button>
+        <div class="logo">regulate</div>
+      </div>
+      <div class="scrollable">
+        <div class="emotion-prompt" id="emotion-prompt">When you think about procrastination...</div>
+        <div class="emotion-sub">Your HRV just shifted. Something is moving underneath. What emotion might be driving this pattern?</div>
+        <div class="emotion-grid" id="emotion-grid">
+          <div class="emotion-card" data-emotion="Fear">
+            <div class="emotion-icon">😰</div>
+            <div class="emotion-name">Fear</div>
+            <div class="emotion-desc">Of failure, judgement</div>
+          </div>
+          <div class="emotion-card" data-emotion="Shame">
+            <div class="emotion-icon">😔</div>
+            <div class="emotion-name">Shame</div>
+            <div class="emotion-desc">Not good enough</div>
+          </div>
+          <div class="emotion-card" data-emotion="Anger">
+            <div class="emotion-icon">😤</div>
+            <div class="emotion-name">Anger</div>
+            <div class="emotion-desc">Resentment, frustration</div>
+          </div>
+          <div class="emotion-card" data-emotion="Grief">
+            <div class="emotion-icon">😢</div>
+            <div class="emotion-name">Grief</div>
+            <div class="emotion-desc">Loss, disappointment</div>
+          </div>
+          <div class="emotion-card" data-emotion="Anxiety">
+            <div class="emotion-icon">😵‍💫</div>
+            <div class="emotion-name">Anxiety</div>
+            <div class="emotion-desc">Overwhelm, dread</div>
+          </div>
+          <div class="emotion-card" data-emotion="Guilt">
+            <div class="emotion-icon">😣</div>
+            <div class="emotion-name">Guilt</div>
+            <div class="emotion-desc">Letting others down</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-feel" disabled>Feel into this</button>
+    </div>
+
+    <!-- ==================== PERSONAL: BODY SCAN ==================== -->
+    <div class="screen" id="screen-body">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('emotion')">← Back</button>
+        <div class="logo">regulate</div>
+      </div>
+      <div class="scrollable">
+        <div class="scan-instruction">Where do you feel <span id="body-emotion">this</span> in your body?</div>
+        <div class="scan-detail" id="scan-detail">Your wearable is detecting elevated heart rate and shallow breathing. Tap where you notice sensation.</div>
+        <div class="body-container">
+          <svg class="body-outline" viewBox="0 0 160 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="80" cy="30" rx="22" ry="26" stroke="var(--border)" stroke-width="1.5" fill="var(--surface)" id="body-head" style="cursor:pointer"/>
+            <rect x="72" y="56" width="16" height="14" rx="4" stroke="var(--border)" stroke-width="1.5" fill="var(--surface)"/>
+            <path d="M50,70 Q48,70 42,90 L38,140 Q36,160 45,180 L50,190 L110,190 L115,180 Q124,160 122,140 L118,90 Q112,70 110,70 Z"
+              stroke="var(--border)" stroke-width="1.5" fill="var(--surface)" id="body-torso" style="cursor:pointer"/>
+            <ellipse cx="80" cy="110" rx="28" ry="20" fill="transparent" id="body-chest" style="cursor:pointer"/>
+            <ellipse cx="80" cy="155" rx="22" ry="18" fill="transparent" id="body-stomach" style="cursor:pointer"/>
+            <path d="M50,75 Q30,85 22,120 Q18,140 20,165 Q21,175 25,180" stroke="var(--border)" stroke-width="1.5" fill="none" id="body-larm" style="cursor:pointer" stroke-linecap="round"/>
+            <path d="M110,75 Q130,85 138,120 Q142,140 140,165 Q139,175 135,180" stroke="var(--border)" stroke-width="1.5" fill="none" id="body-rarm" style="cursor:pointer" stroke-linecap="round"/>
+            <path d="M60,190 Q55,220 52,260 Q50,290 48,320 Q47,330 50,335" stroke="var(--border)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M100,190 Q105,220 108,260 Q110,290 112,320 Q113,330 110,335" stroke="var(--border)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <circle cx="80" cy="63" r="8" fill="transparent" id="body-throat" style="cursor:pointer"/>
+          </svg>
+        </div>
+        <div class="intensity-section">
+          <div class="intensity-label">
+            <span>Intensity</span>
+            <span class="intensity-value" id="intensity-val">5</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="1" max="10" value="5" id="intensity-slider">
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-regulate">Begin regulation</button>
+    </div>
+
+    <!-- ==================== SHARED: BREATHWORK ==================== -->
+    <div class="screen" id="screen-breathe">
+      <div class="header">
+        <button class="back-btn" id="breathe-back-btn">← Back</button>
+        <div class="logo" id="breathe-logo">regulate</div>
+      </div>
+      <div class="breathe-container">
+        <div class="breathe-timer" id="breathe-timer">4:00</div>
+        <div class="breathe-phase" id="breathe-phase">Ready</div>
+        <div class="breathe-circle-outer">
+          <div class="breathe-ring animated"></div>
+          <div class="breathe-ring animated"></div>
+          <div class="breathe-ring animated"></div>
+          <div class="breathe-circle" id="breathe-circle">
+            <div class="breathe-text" id="breathe-text">Start</div>
+          </div>
+        </div>
+        <div class="breathe-progress" id="breathe-progress"></div>
+        <div class="arousal-meter" style="width: 100%;">
+          <div class="arousal-label">Arousal</div>
+          <div class="arousal-bar-bg">
+            <div class="arousal-bar-fill" id="breathe-arousal-fill" style="width: 65%; background: var(--alert);"></div>
+          </div>
+          <div class="arousal-state" id="breathe-arousal-state" style="color: var(--alert);">Elevated</div>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-complete" style="display:none">Continue to reflection</button>
+    </div>
+
+    <!-- ==================== PERSONAL: REFLECTION ==================== -->
+    <div class="screen" id="screen-reflect">
+      <div class="header">
+        <div class="logo">regulate</div>
+      </div>
+      <div class="scrollable">
+        <div class="emotion-prompt">What did you notice?</div>
+        <div class="emotion-sub">As you sat with this emotion, your nervous system began to settle.</div>
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon pattern">🔗</div>
+            <div class="insight-title">Pattern</div>
+          </div>
+          <div class="insight-body" id="insight-pattern"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon body">🫀</div>
+            <div class="insight-title">Body Signal</div>
+          </div>
+          <div class="insight-body" id="insight-body"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon next">✨</div>
+            <div class="insight-title">Integration</div>
+          </div>
+          <div class="insight-body" id="insight-next">You were able to stay present with this emotion. Each time you do this, you're building your capacity to tolerate discomfort without needing to avoid it.</div>
+        </div>
+        <div class="section-label mt-32">Journal (optional)</div>
+        <textarea class="journal-input" placeholder="What else came up for you?"></textarea>
+      </div>
+      <button class="btn-primary" onclick="showScreen('complete')">Complete session</button>
+    </div>
+
+    <!-- ==================== SHARED: COMPLETE ==================== -->
+    <div class="screen" id="screen-complete">
+      <div class="complete-container">
+        <div class="complete-check" id="complete-icon">✓</div>
+        <div class="complete-title" id="complete-title">Session complete</div>
+        <div class="complete-message" id="complete-message">You showed up for yourself today. The more you practice noticing and staying present, the more your window of tolerance expands.</div>
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-value" id="stat-duration">4:32</div>
+            <div class="stat-label">Duration</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-hrv-change">+12</div>
+            <div class="stat-label">HRV Change</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-sessions">3</div>
+            <div class="stat-label">This Week</div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="resetApp()" style="max-width: 280px;">Back to home</button>
+      </div>
+    </div>
+
+    <!-- ==================== LEADER: HOME ==================== -->
+    <div class="screen" id="screen-leader-home">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('mode')">← Modes</button>
+        <div class="logo leader-logo">discern</div>
+      </div>
+      <div class="scrollable">
+        <div class="greeting">What decision is in front of you?</div>
+        <div class="subtitle">Before you decide, let's check what your body already knows.</div>
+
+        <div class="prompt-section">
+          <div class="section-label">The Decision</div>
+          <div class="challenge-input-wrap">
+            <input type="text" class="challenge-input" id="decision-input"
+              placeholder="e.g. Whether to promote Sarah to VP...">
+          </div>
+          <div class="quick-tags">
+            <div class="tag leader-tag" data-decision="Hiring / firing">Hiring / firing</div>
+            <div class="tag leader-tag" data-decision="Strategic pivot">Strategic pivot</div>
+            <div class="tag leader-tag" data-decision="Difficult conversation">Difficult conversation</div>
+            <div class="tag leader-tag" data-decision="Investment / spend">Investment / spend</div>
+            <div class="tag leader-tag" data-decision="Partnership">Partnership</div>
+            <div class="tag leader-tag" data-decision="Saying no">Saying no</div>
+          </div>
+
+          <div class="section-label">Stakes</div>
+          <div class="stakes-row">
+            <div class="stake-btn" data-stakes="low">Low</div>
+            <div class="stake-btn selected" data-stakes="medium">Medium</div>
+            <div class="stake-btn" data-stakes="high">High</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary btn-leader" id="btn-checkin" disabled>Begin body check-in</button>
+    </div>
+
+    <!-- ==================== LEADER: BODY SIGNAL ==================== -->
+    <div class="screen" id="screen-leader-signal">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('leader-home')">← Back</button>
+        <div class="logo leader-logo">discern</div>
+      </div>
+      <div class="scrollable">
+        <div class="emotion-prompt">Think about this decision. Then pause and scan.</div>
+        <div class="emotion-sub" id="leader-signal-sub">As you hold "<span id="leader-decision-text">this decision</span>" in mind, notice what shifts in your body. Your wearable detected a change in your nervous system.</div>
+
+        <div class="section-label">What's your body saying?</div>
+        <div class="signal-grid" id="signal-grid">
+          <div class="signal-card" data-signal="expansion">
+            <div class="signal-icon">↗️</div>
+            <div class="signal-name">Expansion</div>
+            <div class="signal-desc">Opening, energy, leaning forward</div>
+          </div>
+          <div class="signal-card" data-signal="contraction">
+            <div class="signal-icon">↙️</div>
+            <div class="signal-name">Contraction</div>
+            <div class="signal-desc">Tightening, pulling back, bracing</div>
+          </div>
+          <div class="signal-card" data-signal="stillness">
+            <div class="signal-icon">◯</div>
+            <div class="signal-name">Stillness</div>
+            <div class="signal-desc">Calm, neutral, centered</div>
+          </div>
+          <div class="signal-card" data-signal="agitation">
+            <div class="signal-icon">⚡</div>
+            <div class="signal-name">Agitation</div>
+            <div class="signal-desc">Buzzing, restless, urgent</div>
+          </div>
+        </div>
+
+        <div class="section-label">Where in your body?</div>
+        <div class="signal-grid">
+          <div class="signal-card body-loc-card" data-bodyloc="gut">
+            <div class="signal-icon">🫁</div>
+            <div class="signal-name">Gut</div>
+            <div class="signal-desc">Deep knowing, instinct</div>
+          </div>
+          <div class="signal-card body-loc-card" data-bodyloc="chest">
+            <div class="signal-icon">💗</div>
+            <div class="signal-name">Chest / Heart</div>
+            <div class="signal-desc">Values, care, alignment</div>
+          </div>
+          <div class="signal-card body-loc-card" data-bodyloc="throat">
+            <div class="signal-icon">🗣️</div>
+            <div class="signal-name">Throat</div>
+            <div class="signal-desc">Expression, truth</div>
+          </div>
+          <div class="signal-card body-loc-card" data-bodyloc="head">
+            <div class="signal-icon">🧠</div>
+            <div class="signal-name">Head</div>
+            <div class="signal-desc">Analysis, overthinking</div>
+          </div>
+        </div>
+
+        <div class="intensity-section mt-32">
+          <div class="intensity-label">
+            <span>Signal Clarity</span>
+            <span class="intensity-value" id="clarity-val">5</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" min="1" max="10" value="5" id="clarity-slider">
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary btn-leader" id="btn-center" disabled>Center before deciding</button>
+    </div>
+
+    <!-- ==================== LEADER: CLARITY / REFLECTION ==================== -->
+    <div class="screen" id="screen-leader-reflect">
+      <div class="header">
+        <div class="logo leader-logo">discern</div>
+      </div>
+      <div class="scrollable">
+        <div class="emotion-prompt">Your body's read</div>
+        <div class="emotion-sub">After centering, here's what your nervous system is telling you about this decision.</div>
+
+        <!-- Readiness gauge -->
+        <div class="readiness-gauge">
+          <div class="gauge-ring">
+            <svg viewBox="0 0 180 180">
+              <circle class="gauge-bg" cx="90" cy="90" r="75" transform="rotate(-90 90 90)"/>
+              <circle class="gauge-fill" id="gauge-fill" cx="90" cy="90" r="75" transform="rotate(-90 90 90)"
+                stroke-dasharray="471" stroke-dashoffset="471" stroke="var(--gold)"/>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-value" id="gauge-value">—</div>
+              <div class="gauge-label">Readiness</div>
+            </div>
+          </div>
+          <div class="readiness-verdict" id="readiness-verdict">Assessing...</div>
+          <div class="readiness-sub" id="readiness-sub"></div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon decision">🧭</div>
+            <div class="insight-title">Somatic Signal</div>
+          </div>
+          <div class="insight-body" id="leader-insight-signal"></div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon body">🫀</div>
+            <div class="insight-title">Nervous System State</div>
+          </div>
+          <div class="insight-body" id="leader-insight-nervous"></div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon next">⚖️</div>
+            <div class="insight-title">Discernment Note</div>
+          </div>
+          <div class="insight-body" id="leader-insight-discernment"></div>
+        </div>
+
+        <div class="section-label mt-32">Capture your clarity (optional)</div>
+        <textarea class="journal-input" id="leader-journal" placeholder="What's clear to you now that wasn't before?"></textarea>
+      </div>
+      <button class="btn-primary btn-leader" onclick="leaderComplete()">Complete check-in</button>
+    </div>
+
+    <!-- NAV BAR -->
+    <div class="nav-bar">
+      <button class="nav-item active" onclick="resetApp()">
+        <span class="nav-icon">◉</span>
+        Session
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">◷</span>
+        History
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">⬡</span>
+        Insights
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">☰</span>
+        Settings
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ==================== STATE ====================
+    let appMode = ''; // 'personal' or 'leader'
+    let currentChallenge = '';
+    let currentEmotion = '';
+    let selectedBodyPart = '';
+    let currentDecision = '';
+    let currentStakes = 'medium';
+    let currentSignal = '';
+    let currentBodyLoc = '';
+    let breathInterval = null;
+    let sessionStart = null;
+
+    let hrv = 42, hr = 72, resp = 14, arousal = 35;
+
+    // ==================== SCREEN MANAGEMENT ====================
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + id).classList.add('active');
+    }
+
+    // ==================== MODE SELECTION ====================
+    document.querySelectorAll('.mode-card').forEach(card => {
+      card.addEventListener('click', () => {
+        appMode = card.dataset.mode;
+        sessionStart = Date.now();
+        if (appMode === 'personal') {
+          showScreen('home');
+        } else {
+          showScreen('leader-home');
+        }
+      });
+    });
+
+    // ==================== PERSONAL FLOW ====================
+    // Quick tags
+    document.querySelectorAll('#personal-tags .tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        document.querySelectorAll('#personal-tags .tag').forEach(t => t.classList.remove('selected'));
+        tag.classList.add('selected');
+        document.getElementById('challenge-input').value = tag.dataset.challenge;
+        document.getElementById('btn-explore').disabled = false;
+      });
+    });
+
+    const challengeInput = document.getElementById('challenge-input');
+    challengeInput.addEventListener('input', () => {
+      document.getElementById('btn-explore').disabled = !challengeInput.value.trim();
+      document.querySelectorAll('#personal-tags .tag').forEach(t => t.classList.remove('selected'));
+    });
+
+    document.getElementById('btn-explore').addEventListener('click', () => {
+      currentChallenge = challengeInput.value.trim();
+      document.getElementById('emotion-prompt').textContent =
+        `When you think about "${currentChallenge.toLowerCase()}"...`;
+      simulateBioShift('elevated');
+      showScreen('emotion');
+    });
+
+    document.querySelectorAll('.emotion-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        currentEmotion = card.dataset.emotion;
+        document.getElementById('btn-feel').disabled = false;
+      });
+    });
+
+    document.getElementById('btn-feel').addEventListener('click', () => {
+      document.getElementById('body-emotion').textContent = currentEmotion.toLowerCase();
+      const details = {
+        'Fear': 'Your breathing has become shallow and heart rate elevated. Common areas: chest tightness, stomach knots, throat constriction.',
+        'Shame': 'Your HRV has dropped slightly. Common areas: sinking in chest, heat in face, heaviness in shoulders.',
+        'Anger': 'Heart rate elevated, breathing faster. Common areas: jaw tension, fists, heat in chest and face.',
+        'Grief': 'Breathing has deepened. Common areas: heaviness in chest, ache behind eyes, weight in whole body.',
+        'Anxiety': 'Rapid shallow breathing detected. Common areas: buzzing in chest, tightness in throat, restless limbs.',
+        'Guilt': 'HRV slightly suppressed. Common areas: pit in stomach, weight on shoulders, constriction in chest.'
+      };
+      document.getElementById('scan-detail').textContent = details[currentEmotion] || details['Fear'];
+      showScreen('body');
+    });
+
+    ['body-head', 'body-torso', 'body-chest', 'body-stomach', 'body-throat'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('click', (e) => {
+          selectedBodyPart = id;
+          document.querySelectorAll('.body-outline *').forEach(p => {
+            if (p.style) p.style.fill = p.id ? 'var(--surface)' : '';
+          });
+          e.target.style.fill = 'rgba(108, 92, 231, 0.2)';
+          e.target.style.stroke = 'var(--accent)';
+        });
+      }
+    });
+
+    document.getElementById('intensity-slider').addEventListener('input', (e) => {
+      document.getElementById('intensity-val').textContent = e.target.value;
+    });
+
+    document.getElementById('btn-regulate').addEventListener('click', () => {
+      setupBreathScreen('personal');
+      showScreen('breathe');
+      startBreathing();
+    });
+
+    // ==================== LEADER FLOW ====================
+    const decisionInput = document.getElementById('decision-input');
+
+    // Leader quick tags
+    document.querySelectorAll('.tag.leader-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        document.querySelectorAll('.tag.leader-tag').forEach(t => t.classList.remove('selected'));
+        tag.classList.add('selected');
+        decisionInput.value = tag.dataset.decision;
+        document.getElementById('btn-checkin').disabled = false;
+      });
+    });
+
+    decisionInput.addEventListener('input', () => {
+      document.getElementById('btn-checkin').disabled = !decisionInput.value.trim();
+      document.querySelectorAll('.tag.leader-tag').forEach(t => t.classList.remove('selected'));
+    });
+
+    // Stakes
+    document.querySelectorAll('.stake-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.stake-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        currentStakes = btn.dataset.stakes;
+      });
+    });
+
+    document.getElementById('btn-checkin').addEventListener('click', () => {
+      currentDecision = decisionInput.value.trim();
+      document.getElementById('leader-decision-text').textContent = currentDecision.toLowerCase();
+      simulateBioShift('elevated');
+      showScreen('leader-signal');
+    });
+
+    // Signal selection
+    document.querySelectorAll('.signal-card:not(.body-loc-card)').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.signal-card:not(.body-loc-card)').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        currentSignal = card.dataset.signal;
+        checkLeaderReady();
+      });
+    });
+
+    document.querySelectorAll('.body-loc-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.body-loc-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        currentBodyLoc = card.dataset.bodyloc;
+        checkLeaderReady();
+      });
+    });
+
+    document.getElementById('clarity-slider').addEventListener('input', (e) => {
+      document.getElementById('clarity-val').textContent = e.target.value;
+    });
+
+    function checkLeaderReady() {
+      document.getElementById('btn-center').disabled = !(currentSignal && currentBodyLoc);
+    }
+
+    document.getElementById('btn-center').addEventListener('click', () => {
+      setupBreathScreen('leader');
+      showScreen('breathe');
+      startBreathing();
+    });
+
+    function setupBreathScreen(mode) {
+      const logo = document.getElementById('breathe-logo');
+      const backBtn = document.getElementById('breathe-back-btn');
+      if (mode === 'leader') {
+        logo.className = 'logo leader-logo';
+        logo.textContent = 'discern';
+        backBtn.onclick = () => { stopBreathing(); showScreen('leader-signal'); };
+      } else {
+        logo.className = 'logo';
+        logo.textContent = 'regulate';
+        backBtn.onclick = () => { stopBreathing(); showScreen('body'); };
+      }
+    }
+
+    // ==================== BREATHWORK (SHARED) ====================
+    let breathCycles = 0;
+    const totalCycles = 6;
+
+    function startBreathing() {
+      breathCycles = 0;
+      const progressEl = document.getElementById('breathe-progress');
+      progressEl.innerHTML = '';
+      for (let i = 0; i < totalCycles; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'breathe-dot';
+        progressEl.appendChild(dot);
+      }
+
+      document.getElementById('breathe-circle').classList.add('active');
+      document.getElementById('breathe-timer').textContent = '2:00';
+      document.getElementById('breathe-phase').textContent = 'Ready';
+      document.getElementById('breathe-text').textContent = 'Start';
+
+      let totalSeconds = 2 * 60;
+      const phases = ['Breathe in', 'Hold', 'Breathe out', 'Hold'];
+      const durations = [4, 4, 6, 2];
+      let phaseIndex = 0;
+      let phaseTime = 0;
+
+      breathInterval = setInterval(() => {
+        totalSeconds--;
+        if (totalSeconds <= 0) { completeBreathing(); return; }
+
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        document.getElementById('breathe-timer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+        phaseTime++;
+        if (phaseTime >= durations[phaseIndex]) {
+          phaseTime = 0;
+          phaseIndex = (phaseIndex + 1) % phases.length;
+          if (phaseIndex === 0) {
+            breathCycles++;
+            const dots = progressEl.querySelectorAll('.breathe-dot');
+            if (breathCycles <= totalCycles) dots[breathCycles - 1].classList.add('done');
+          }
+        }
+
+        document.getElementById('breathe-phase').textContent = phases[phaseIndex];
+        document.getElementById('breathe-text').textContent =
+          phaseIndex === 0 ? 'In' : phaseIndex === 2 ? 'Out' : '···';
+
+        const arousalEl = document.getElementById('breathe-arousal-fill');
+        const stateEl = document.getElementById('breathe-arousal-state');
+        const progress = 1 - (totalSeconds / 120);
+        const currentArousal = 65 - (progress * 40);
+        arousalEl.style.width = currentArousal + '%';
+        if (currentArousal < 35) {
+          arousalEl.style.background = 'var(--calm)';
+          stateEl.style.color = 'var(--calm)';
+          stateEl.textContent = 'Regulated';
+        } else if (currentArousal < 50) {
+          arousalEl.style.background = 'var(--warm)';
+          stateEl.style.color = 'var(--warm)';
+          stateEl.textContent = 'Settling';
+        }
+      }, 1000);
+
+      setTimeout(() => {
+        document.getElementById('btn-complete').style.display = 'block';
+      }, 12000);
+    }
+
+    function stopBreathing() {
+      if (breathInterval) clearInterval(breathInterval);
+      document.getElementById('breathe-circle').classList.remove('active');
+    }
+
+    function completeBreathing() {
+      stopBreathing();
+      if (appMode === 'leader') {
+        buildLeaderReflection();
+        showScreen('leader-reflect');
+      } else {
+        buildPersonalReflection();
+        showScreen('reflect');
+      }
+    }
+
+    document.getElementById('btn-complete').addEventListener('click', completeBreathing);
+
+    // ==================== PERSONAL REFLECTION ====================
+    function buildPersonalReflection() {
+      document.getElementById('insight-pattern').textContent =
+        `Your ${currentChallenge.toLowerCase()} pattern appears linked to ${currentEmotion.toLowerCase()}. ` +
+        `This is a protective response — your nervous system learned to avoid situations that trigger ${currentEmotion.toLowerCase()}.`;
+
+      const bodyMap = { 'body-chest': 'chest', 'body-stomach': 'stomach', 'body-head': 'head', 'body-throat': 'throat', 'body-torso': 'torso' };
+      const part = bodyMap[selectedBodyPart] || 'body';
+      document.getElementById('insight-body').textContent =
+        `You noticed sensation in your ${part}. Your HRV dropped when exploring ${currentEmotion.toLowerCase()}, indicating sympathetic activation. After breathwork, your system began returning to baseline.`;
+
+      updateDuration();
+    }
+
+    // ==================== LEADER REFLECTION ====================
+    function buildLeaderReflection() {
+      const clarity = parseInt(document.getElementById('clarity-slider').value);
+
+      // Compute readiness score
+      let readiness = 50;
+      if (currentSignal === 'expansion') readiness += 25;
+      else if (currentSignal === 'stillness') readiness += 15;
+      else if (currentSignal === 'contraction') readiness -= 15;
+      else if (currentSignal === 'agitation') readiness -= 25;
+
+      if (clarity >= 7) readiness += 15;
+      else if (clarity <= 3) readiness -= 15;
+
+      if (currentStakes === 'high' && readiness < 60) readiness -= 10;
+
+      readiness = Math.max(10, Math.min(95, readiness));
+
+      // Animate gauge
+      const gaugeFill = document.getElementById('gauge-fill');
+      const circumference = 471;
+      const offset = circumference - (readiness / 100) * circumference;
+      setTimeout(() => {
+        gaugeFill.style.strokeDashoffset = offset;
+        if (readiness >= 70) gaugeFill.style.stroke = 'var(--calm)';
+        else if (readiness >= 40) gaugeFill.style.stroke = 'var(--warm)';
+        else gaugeFill.style.stroke = 'var(--alert)';
+      }, 300);
+
+      document.getElementById('gauge-value').textContent = readiness + '%';
+
+      // Verdict
+      const verdictEl = document.getElementById('readiness-verdict');
+      const subEl = document.getElementById('readiness-sub');
+      if (readiness >= 70) {
+        verdictEl.textContent = 'Ready to proceed';
+        verdictEl.style.color = 'var(--calm)';
+        subEl.textContent = 'Your body is signaling alignment. You have the clarity to act on this decision.';
+      } else if (readiness >= 40) {
+        verdictEl.textContent = 'Proceed with awareness';
+        verdictEl.style.color = 'var(--warm)';
+        subEl.textContent = 'There\'s something worth paying attention to. You can decide, but stay curious about what your body is flagging.';
+      } else {
+        verdictEl.textContent = 'Wait — more clarity needed';
+        verdictEl.style.color = 'var(--alert)';
+        subEl.textContent = 'Your nervous system is activated. This doesn\'t mean the decision is wrong, but you may not have full access to your discernment right now.';
+      }
+
+      // Signal insight
+      const signalTexts = {
+        expansion: `Your body responded with expansion — a felt sense of opening and energy. When you think about "${currentDecision.toLowerCase()}", your system leans toward yes. This often indicates alignment with your values.`,
+        contraction: `Your body contracted — a pulling-back, protective response. When holding "${currentDecision.toLowerCase()}" in mind, something in your system says "not yet" or "not this way." This is worth listening to.`,
+        stillness: `Your body found stillness — a centered, neutral response. This often means you have clarity already and are processing at a deeper level. Trust what emerges.`,
+        agitation: `Your body is agitated — buzzing, restless energy. Around "${currentDecision.toLowerCase()}", your nervous system is activated. This could mean the stakes feel high, or that something unresolved is being triggered.`
+      };
+      document.getElementById('leader-insight-signal').textContent = signalTexts[currentSignal] || '';
+
+      // Nervous system insight
+      const locTexts = {
+        gut: 'You felt this in your gut — the seat of instinct and deep knowing. Gut signals often carry information that the analytical mind hasn\'t processed yet. Leaders who learn to read their gut make faster, more congruent decisions.',
+        chest: 'You felt this in your chest/heart — the center of values and care. Heart signals often indicate whether a decision is aligned with what matters most to you. When heart and head agree, conviction follows.',
+        throat: 'You felt this in your throat — connected to voice and truth. Throat signals often arise when something needs to be said, or when you\'re holding back expression. What would you say if you fully trusted yourself?',
+        head: 'The signal was primarily in your head — analysis and thinking. This can mean you\'re overthinking rather than feeling. The body often has the answer before the mind catches up. Try dropping your attention lower next time.'
+      };
+      document.getElementById('leader-insight-nervous').textContent = locTexts[currentBodyLoc] || '';
+
+      // Discernment note
+      const stakesContext = currentStakes === 'high'
+        ? 'Given the high stakes, it\'s worth checking: is your decision coming from clarity or from pressure? The two feel very different in the body.'
+        : currentStakes === 'low'
+        ? 'Lower-stakes decisions are good practice ground for building somatic awareness. Notice if you can carry this body-check habit into higher-stakes moments.'
+        : 'At this level of stakes, your body\'s signal is a useful data point alongside your analysis. Neither overrule the other — let them inform each other.';
+      document.getElementById('leader-insight-discernment').textContent = stakesContext;
+
+      updateDuration();
+    }
+
+    function leaderComplete() {
+      document.getElementById('complete-icon').style.background = 'linear-gradient(135deg, var(--gold), #e6c675)';
+      document.getElementById('complete-title').textContent = 'Check-in complete';
+      document.getElementById('complete-message').textContent = 'You paused before deciding. That discipline compounds — over time, your ability to read your own signals gets sharper and faster.';
+      showScreen('complete');
+    }
+
+    // ==================== SHARED UTILITIES ====================
+    function updateDuration() {
+      const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      document.getElementById('stat-duration').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function simulateBioShift(state) {
+      if (state === 'elevated') {
+        hrv = 32 + Math.floor(Math.random() * 8);
+        hr = 78 + Math.floor(Math.random() * 12);
+        resp = 17 + Math.floor(Math.random() * 4);
+        arousal = 55 + Math.floor(Math.random() * 15);
+      } else {
+        hrv = 45 + Math.floor(Math.random() * 10);
+        hr = 68 + Math.floor(Math.random() * 6);
+        resp = 12 + Math.floor(Math.random() * 3);
+        arousal = 25 + Math.floor(Math.random() * 10);
+      }
+      updateBioDisplay();
+    }
+
+    function updateBioDisplay() {
+      document.getElementById('hrv-value').innerHTML = `${hrv} <span class="metric-unit">ms</span>`;
+      document.getElementById('hr-value').innerHTML = `${hr} <span class="metric-unit">bpm</span>`;
+      document.getElementById('resp-value').innerHTML = `${resp} <span class="metric-unit">/m</span>`;
+
+      const fill = document.getElementById('arousal-fill');
+      const state = document.getElementById('arousal-state');
+      fill.style.width = arousal + '%';
+      if (arousal > 55) {
+        fill.style.background = 'var(--alert)';
+        state.style.color = 'var(--alert)';
+        state.textContent = 'Activated';
+      } else if (arousal > 35) {
+        fill.style.background = 'var(--warm)';
+        state.style.color = 'var(--warm)';
+        state.textContent = 'Alert';
+      } else {
+        fill.style.background = 'var(--calm)';
+        state.style.color = 'var(--calm)';
+        state.textContent = 'Regulated';
+      }
+    }
+
+    function animateHRV() {
+      const path = document.getElementById('hrv-path');
+      let d = 'M0,30';
+      for (let x = 10; x <= 380; x += 10) {
+        const variance = hrv > 40 ? 12 : 6;
+        const y = 30 + (Math.sin(x * 0.05 + Date.now() * 0.002) * variance) + (Math.random() - 0.5) * 4;
+        d += ` L${x},${y.toFixed(1)}`;
+      }
+      path.setAttribute('d', d);
+      requestAnimationFrame(animateHRV);
+    }
+    animateHRV();
+
+    setInterval(() => {
+      hrv += Math.floor(Math.random() * 3) - 1;
+      hr += Math.floor(Math.random() * 3) - 1;
+      hrv = Math.max(25, Math.min(65, hrv));
+      hr = Math.max(58, Math.min(95, hr));
+      updateBioDisplay();
+    }, 3000);
+
+    function resetApp() {
+      appMode = '';
+      currentChallenge = '';
+      currentEmotion = '';
+      selectedBodyPart = '';
+      currentDecision = '';
+      currentSignal = '';
+      currentBodyLoc = '';
+      challengeInput.value = '';
+      decisionInput.value = '';
+      document.getElementById('btn-explore').disabled = true;
+      document.getElementById('btn-feel').disabled = true;
+      document.getElementById('btn-checkin').disabled = true;
+      document.getElementById('btn-center').disabled = true;
+      document.getElementById('btn-complete').style.display = 'none';
+      document.getElementById('breathe-arousal-fill').style.width = '65%';
+      document.getElementById('breathe-arousal-fill').style.background = 'var(--alert)';
+      document.getElementById('breathe-arousal-state').textContent = 'Elevated';
+      document.getElementById('breathe-arousal-state').style.color = 'var(--alert)';
+      document.getElementById('gauge-fill').style.strokeDashoffset = '471';
+      document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+      document.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.signal-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.stake-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelector('[data-stakes="medium"]').classList.add('selected');
+      document.getElementById('complete-icon').style.background = 'linear-gradient(135deg, var(--calm), #55efc4)';
+      document.getElementById('complete-title').textContent = 'Session complete';
+      simulateBioShift('calm');
+      showScreen('mode');
+    }
+  </script>
+</body>
+</html>
