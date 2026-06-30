@@ -108,6 +108,62 @@
       line-height: 1.5;
     }
 
+    /* Onboarding card */
+    .onboarding-card {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .onboarding-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .onboarding-main-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      flex: 1;
+    }
+    .onboarding-dismiss {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .onboarding-dismiss:hover { color: var(--text); }
+    .onboarding-toggle {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .onboarding-toggle:hover { text-decoration: underline; }
+    .onboarding-expanded {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      display: none;
+    }
+    .onboarding-expanded.open { display: block; }
+
     /* Mode selector */
     .mode-selector {
       display: grid;
@@ -139,8 +195,9 @@
       background: rgba(212, 168, 85, 0.08);
     }
     .mode-icon {
-      font-size: 36px;
       margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
     }
     .mode-title {
       font-size: 15px;
@@ -371,15 +428,32 @@
     }
     .emotion-card.selected {
       border-color: var(--accent);
-      background: rgba(108, 92, 231, 0.1);
-      box-shadow: 0 0 20px var(--accent-glow);
+      background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(108, 92, 231, 0.05));
+      box-shadow: 0 0 25px var(--accent-glow), inset 0 0 20px rgba(108, 92, 231, 0.08);
+      border-width: 2px;
     }
-    .emotion-icon { font-size: 32px; margin-bottom: 8px; }
+    .emotion-icon {
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: center;
+    }
     .emotion-name { font-size: 14px; font-weight: 500; }
     .emotion-desc {
       font-size: 11px;
       color: var(--text-muted);
       margin-top: 4px;
+    }
+
+    /* Body scan selection */
+    @keyframes bodyPartPulse {
+      0%, 100% { filter: drop-shadow(0 0 6px var(--accent-glow)); }
+      50% { filter: drop-shadow(0 0 14px rgba(108, 92, 231, 0.6)); }
+    }
+    .body-part-selected {
+      fill: rgba(108, 92, 231, 0.35) !important;
+      stroke: var(--accent) !important;
+      stroke-width: 2.5px !important;
+      animation: bodyPartPulse 2s ease-in-out infinite !important;
     }
 
     .body-container {
@@ -413,6 +487,7 @@
     .intensity-label {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 12px;
     }
     .intensity-label span {
@@ -425,6 +500,52 @@
       font-size: 14px;
       font-weight: 600;
       color: var(--accent);
+    }
+    .intensity-label-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .info-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .info-btn:hover .tooltip {
+      display: block;
+    }
+    .tooltip {
+      display: none;
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+      width: 260px;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+    }
+    .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--surface-2);
     }
     input[type="range"] {
       -webkit-appearance: none;
@@ -552,7 +673,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
     }
     .insight-icon.pattern { background: rgba(108, 92, 231, 0.15); }
     .insight-icon.body { background: rgba(0, 184, 148, 0.15); }
@@ -598,7 +718,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 36px;
       margin-bottom: 24px;
       animation: scaleIn 0.5s ease-out;
     }
@@ -667,7 +786,11 @@
       transition: color 0.2s;
     }
     .nav-item.active { color: var(--accent); }
-    .nav-icon { font-size: 22px; }
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .scrollable {
       flex: 1;
@@ -739,7 +862,11 @@
       background: rgba(212, 168, 85, 0.08);
       box-shadow: 0 0 20px var(--gold-glow);
     }
-    .signal-icon { font-size: 28px; margin-bottom: 8px; }
+    .signal-icon {
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: center;
+    }
     .signal-name { font-size: 14px; font-weight: 500; }
     .signal-desc {
       font-size: 11px;
@@ -853,12 +980,24 @@
 
         <div class="mode-selector">
           <div class="mode-card mode-personal" id="mode-personal" data-mode="personal">
-            <div class="mode-icon">🌊</div>
+            <div class="mode-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 24C6 24 10 16 18 16C26 16 30 24 30 24" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round"/>
+                <path d="M4 18C8 12 14 10 18 14C22 10 28 12 32 18" stroke="#6c5ce7" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+                <circle cx="18" cy="20" r="3" fill="#6c5ce7" opacity="0.6"/>
+              </svg>
+            </div>
             <div class="mode-title">Regulate</div>
             <div class="mode-desc">Explore emotions, build presence, expand your window of tolerance</div>
           </div>
           <div class="mode-card mode-leader" id="mode-leader" data-mode="leader">
-            <div class="mode-icon">🧭</div>
+            <div class="mode-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="18" cy="18" r="12" stroke="#d4a855" stroke-width="1.5"/>
+                <path d="M18 8L18 18L26 22" stroke="#d4a855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="18" cy="18" r="2" fill="#d4a855"/>
+              </svg>
+            </div>
             <div class="mode-title">Discern</div>
             <div class="mode-desc">Check in with your body before a decision. Lead from clarity, not reactivity</div>
           </div>
@@ -909,6 +1048,29 @@
       </div>
 
       <div class="scrollable">
+        <!-- Onboarding card -->
+        <div class="onboarding-card" id="onboarding-card">
+          <div class="onboarding-header">
+            <div class="onboarding-main-text">
+              Regulate helps you expand your window of tolerance — your capacity to experience difficult emotions without being overwhelmed or shutting down. Each session builds this capacity.
+            </div>
+            <button class="onboarding-dismiss" onclick="dismissOnboarding()" aria-label="Dismiss">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <button class="onboarding-toggle" id="onboarding-toggle" onclick="toggleOnboardingExpand()">
+            Learn more
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" id="onboarding-chevron">
+              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="onboarding-expanded" id="onboarding-expanded">
+            When we encounter emotions we've learned to avoid, our nervous system reacts — fight, flight, or freeze. By practicing noticing these sensations and staying present with them, you gradually widen the range of experiences you can handle while remaining grounded. This is how lasting emotional resilience is built.
+          </div>
+        </div>
+
         <div class="greeting">What's showing up?</div>
         <div class="subtitle">Name a challenge, and we'll explore what's underneath it together.</div>
 
@@ -942,32 +1104,78 @@
         <div class="emotion-sub">Your HRV just shifted. Something is moving underneath. What emotion might be driving this pattern?</div>
         <div class="emotion-grid" id="emotion-grid">
           <div class="emotion-card" data-emotion="Fear">
-            <div class="emotion-icon">😰</div>
+            <div class="emotion-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" stroke="#e17055" stroke-width="1.5"/>
+                <circle cx="12" cy="14" r="2" fill="#e17055"/>
+                <circle cx="20" cy="14" r="2" fill="#e17055"/>
+                <path d="M11 21C11 21 13 19 16 19C19 19 21 21 21 21" stroke="#e17055" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <div class="emotion-name">Fear</div>
             <div class="emotion-desc">Of failure, judgement</div>
           </div>
           <div class="emotion-card" data-emotion="Shame">
-            <div class="emotion-icon">😔</div>
+            <div class="emotion-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" stroke="#8888a0" stroke-width="1.5"/>
+                <path d="M12 15L10 13" stroke="#8888a0" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M20 15L22 13" stroke="#8888a0" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M12 21C12 21 14 19 16 19C18 19 20 21 20 21" stroke="#8888a0" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <div class="emotion-name">Shame</div>
             <div class="emotion-desc">Not good enough</div>
           </div>
           <div class="emotion-card" data-emotion="Anger">
-            <div class="emotion-icon">😤</div>
+            <div class="emotion-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" stroke="#e17055" stroke-width="1.5"/>
+                <path d="M10 12L14 14" stroke="#e17055" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M22 12L18 14" stroke="#e17055" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="12" cy="15" r="1.5" fill="#e17055"/>
+                <circle cx="20" cy="15" r="1.5" fill="#e17055"/>
+                <path d="M12 21L20 21" stroke="#e17055" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <div class="emotion-name">Anger</div>
             <div class="emotion-desc">Resentment, frustration</div>
           </div>
           <div class="emotion-card" data-emotion="Grief">
-            <div class="emotion-icon">😢</div>
+            <div class="emotion-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" stroke="#6c5ce7" stroke-width="1.5"/>
+                <circle cx="12" cy="14" r="1.5" fill="#6c5ce7"/>
+                <circle cx="20" cy="14" r="1.5" fill="#6c5ce7"/>
+                <path d="M12 21C12 21 14 19 16 19C18 19 20 21 20 21" stroke="#6c5ce7" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M20 15L21 18" stroke="#6c5ce7" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+              </svg>
+            </div>
             <div class="emotion-name">Grief</div>
             <div class="emotion-desc">Loss, disappointment</div>
           </div>
           <div class="emotion-card" data-emotion="Anxiety">
-            <div class="emotion-icon">😵‍💫</div>
+            <div class="emotion-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" stroke="#fdcb6e" stroke-width="1.5"/>
+                <path d="M10 13C10 13 11 15 12 13" stroke="#fdcb6e" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M20 13C20 13 21 15 22 13" stroke="#fdcb6e" stroke-width="1.5" stroke-linecap="round"/>
+                <ellipse cx="16" cy="21" rx="3" ry="2" stroke="#fdcb6e" stroke-width="1.5"/>
+              </svg>
+            </div>
             <div class="emotion-name">Anxiety</div>
             <div class="emotion-desc">Overwhelm, dread</div>
           </div>
           <div class="emotion-card" data-emotion="Guilt">
-            <div class="emotion-icon">😣</div>
+            <div class="emotion-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" stroke="#8888a0" stroke-width="1.5"/>
+                <circle cx="12" cy="14" r="1.5" fill="#8888a0"/>
+                <circle cx="20" cy="14" r="1.5" fill="#8888a0"/>
+                <path d="M11 20C11 20 13 22 16 22C19 22 21 20 21 20" stroke="#8888a0" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M16 8L16 5" stroke="#8888a0" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+              </svg>
+            </div>
             <div class="emotion-name">Guilt</div>
             <div class="emotion-desc">Letting others down</div>
           </div>
@@ -1002,7 +1210,16 @@
         </div>
         <div class="intensity-section">
           <div class="intensity-label">
-            <span>Intensity</span>
+            <div class="intensity-label-left">
+              <span>Intensity</span>
+              <button class="info-btn" aria-label="Intensity info">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="8" cy="8" r="6.5" stroke="var(--text-muted)" stroke-width="1"/>
+                  <text x="8" y="11.5" text-anchor="middle" fill="var(--text-muted)" font-size="9" font-weight="600" font-family="Inter, sans-serif">i</text>
+                </svg>
+                <div class="tooltip">Rate how strongly you feel this sensation in your body right now, from barely noticeable (1) to overwhelming (10).</div>
+              </button>
+            </div>
             <span class="intensity-value" id="intensity-val">5</span>
           </div>
           <div class="slider-wrap">
@@ -1052,21 +1269,38 @@
         <div class="emotion-sub">As you sat with this emotion, your nervous system began to settle.</div>
         <div class="insight-card">
           <div class="insight-header">
-            <div class="insight-icon pattern">🔗</div>
+            <div class="insight-icon pattern">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="5" cy="9" r="2.5" stroke="#6c5ce7" stroke-width="1.5"/>
+                <circle cx="13" cy="9" r="2.5" stroke="#6c5ce7" stroke-width="1.5"/>
+                <path d="M7.5 9H10.5" stroke="#6c5ce7" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <div class="insight-title">Pattern</div>
           </div>
           <div class="insight-body" id="insight-pattern"></div>
         </div>
         <div class="insight-card">
           <div class="insight-header">
-            <div class="insight-icon body">🫀</div>
+            <div class="insight-icon body">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 3C7 3 5 5 5 7.5C5 12 9 15 9 15C9 15 13 12 13 7.5C13 5 11 3 9 3Z" stroke="#00b894" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 8L8.5 9.5L11 7" stroke="#00b894" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
             <div class="insight-title">Body Signal</div>
           </div>
           <div class="insight-body" id="insight-body"></div>
         </div>
         <div class="insight-card">
           <div class="insight-header">
-            <div class="insight-icon next">✨</div>
+            <div class="insight-icon next">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 3V15" stroke="#fdcb6e" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M3 9H15" stroke="#fdcb6e" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="9" cy="9" r="3" stroke="#fdcb6e" stroke-width="1" opacity="0.5"/>
+              </svg>
+            </div>
             <div class="insight-title">Integration</div>
           </div>
           <div class="insight-body" id="insight-next">You were able to stay present with this emotion. Each time you do this, you're building your capacity to tolerate discomfort without needing to avoid it.</div>
@@ -1074,13 +1308,17 @@
         <div class="section-label mt-32">Journal (optional)</div>
         <textarea class="journal-input" placeholder="What else came up for you?"></textarea>
       </div>
-      <button class="btn-primary" onclick="showScreen('complete')">Complete session</button>
+      <button class="btn-primary" onclick="completeSession()">Complete session</button>
     </div>
 
     <!-- ==================== SHARED: COMPLETE ==================== -->
     <div class="screen" id="screen-complete">
       <div class="complete-container">
-        <div class="complete-check" id="complete-icon">✓</div>
+        <div class="complete-check" id="complete-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 18L16 24L26 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <div class="complete-title" id="complete-title">Session complete</div>
         <div class="complete-message" id="complete-message">You showed up for yourself today. The more you practice noticing and staying present, the more your window of tolerance expands.</div>
         <div class="stats-row">
@@ -1094,7 +1332,7 @@
           </div>
           <div class="stat">
             <div class="stat-value" id="stat-sessions">3</div>
-            <div class="stat-label">This Week</div>
+            <div class="stat-label">Sessions this week</div>
           </div>
         </div>
         <button class="btn-primary" onclick="resetApp()" style="max-width: 280px;">Back to home</button>
@@ -1150,22 +1388,44 @@
         <div class="section-label">What's your body saying?</div>
         <div class="signal-grid" id="signal-grid">
           <div class="signal-card" data-signal="expansion">
-            <div class="signal-icon">↗️</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 18L18 10" stroke="#d4a855" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 10H18V16" stroke="#d4a855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
             <div class="signal-name">Expansion</div>
             <div class="signal-desc">Opening, energy, leaning forward</div>
           </div>
           <div class="signal-card" data-signal="contraction">
-            <div class="signal-icon">↙️</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 10L10 18" stroke="#d4a855" stroke-width="2" stroke-linecap="round"/>
+                <path d="M16 18H10V12" stroke="#d4a855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
             <div class="signal-name">Contraction</div>
             <div class="signal-desc">Tightening, pulling back, bracing</div>
           </div>
           <div class="signal-card" data-signal="stillness">
-            <div class="signal-icon">◯</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="14" cy="14" r="8" stroke="#d4a855" stroke-width="1.5"/>
+                <circle cx="14" cy="14" r="2" fill="#d4a855"/>
+              </svg>
+            </div>
             <div class="signal-name">Stillness</div>
             <div class="signal-desc">Calm, neutral, centered</div>
           </div>
           <div class="signal-card" data-signal="agitation">
-            <div class="signal-icon">⚡</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 6V12" stroke="#d4a855" stroke-width="2" stroke-linecap="round"/>
+                <path d="M14 16V22" stroke="#d4a855" stroke-width="2" stroke-linecap="round"/>
+                <path d="M10 10L12.5 12.5" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M15.5 15.5L18 18" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <div class="signal-name">Agitation</div>
             <div class="signal-desc">Buzzing, restless, urgent</div>
           </div>
@@ -1174,22 +1434,43 @@
         <div class="section-label">Where in your body?</div>
         <div class="signal-grid">
           <div class="signal-card body-loc-card" data-bodyloc="gut">
-            <div class="signal-icon">🫁</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="14" cy="16" rx="7" ry="6" stroke="#d4a855" stroke-width="1.5"/>
+                <path d="M10 14C10 14 12 16 14 14C16 12 18 14 18 14" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <div class="signal-name">Gut</div>
             <div class="signal-desc">Deep knowing, instinct</div>
           </div>
           <div class="signal-card body-loc-card" data-bodyloc="chest">
-            <div class="signal-icon">💗</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 22C14 22 6 17 6 12C6 9 8.5 7 11 7C12.5 7 13.5 8 14 9C14.5 8 15.5 7 17 7C19.5 7 22 9 22 12C22 17 14 22 14 22Z" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
             <div class="signal-name">Chest / Heart</div>
             <div class="signal-desc">Values, care, alignment</div>
           </div>
           <div class="signal-card body-loc-card" data-bodyloc="throat">
-            <div class="signal-icon">🗣️</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="14" cy="12" r="5" stroke="#d4a855" stroke-width="1.5"/>
+                <path d="M10 18C10 18 11 20 14 20C17 20 18 18 18 18" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M12 22L16 22" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <div class="signal-name">Throat</div>
             <div class="signal-desc">Expression, truth</div>
           </div>
           <div class="signal-card body-loc-card" data-bodyloc="head">
-            <div class="signal-icon">🧠</div>
+            <div class="signal-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="14" cy="14" r="8" stroke="#d4a855" stroke-width="1.5"/>
+                <path d="M10 12C10 12 12 14 14 12C16 10 18 12 18 12" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M11 17H17" stroke="#d4a855" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+              </svg>
+            </div>
             <div class="signal-name">Head</div>
             <div class="signal-desc">Analysis, overthinking</div>
           </div>
@@ -1226,7 +1507,7 @@
                 stroke-dasharray="471" stroke-dashoffset="471" stroke="var(--gold)"/>
             </svg>
             <div class="gauge-center">
-              <div class="gauge-value" id="gauge-value">—</div>
+              <div class="gauge-value" id="gauge-value">--</div>
               <div class="gauge-label">Readiness</div>
             </div>
           </div>
@@ -1236,7 +1517,12 @@
 
         <div class="insight-card">
           <div class="insight-header">
-            <div class="insight-icon decision">🧭</div>
+            <div class="insight-icon decision">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="9" cy="9" r="6" stroke="#d4a855" stroke-width="1.5"/>
+                <path d="M9 4V9L12.5 11" stroke="#d4a855" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
             <div class="insight-title">Somatic Signal</div>
           </div>
           <div class="insight-body" id="leader-insight-signal"></div>
@@ -1244,7 +1530,12 @@
 
         <div class="insight-card">
           <div class="insight-header">
-            <div class="insight-icon body">🫀</div>
+            <div class="insight-icon body">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 3C7 3 5 5 5 7.5C5 12 9 15 9 15C9 15 13 12 13 7.5C13 5 11 3 9 3Z" stroke="#00b894" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 8L8.5 9.5L11 7" stroke="#00b894" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
             <div class="insight-title">Nervous System State</div>
           </div>
           <div class="insight-body" id="leader-insight-nervous"></div>
@@ -1252,7 +1543,14 @@
 
         <div class="insight-card">
           <div class="insight-header">
-            <div class="insight-icon next">⚖️</div>
+            <div class="insight-icon next">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 9H15" stroke="#fdcb6e" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M9 3V15" stroke="#fdcb6e" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M5 5L13 13" stroke="#fdcb6e" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+                <path d="M13 5L5 13" stroke="#fdcb6e" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+              </svg>
+            </div>
             <div class="insight-title">Discernment Note</div>
           </div>
           <div class="insight-body" id="leader-insight-discernment"></div>
@@ -1267,19 +1565,37 @@
     <!-- NAV BAR -->
     <div class="nav-bar">
       <button class="nav-item active" onclick="resetApp()">
-        <span class="nav-icon">◉</span>
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+          </svg>
+        </span>
         Session
       </button>
       <button class="nav-item">
-        <span class="nav-icon">◷</span>
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M11 6V11L14.5 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
         History
       </button>
       <button class="nav-item">
-        <span class="nav-icon">⬡</span>
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 3L13 8H19L14.5 11.5L16 17L11 13.5L6 17L7.5 11.5L3 8H9L11 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </span>
         Insights
       </button>
       <button class="nav-item">
-        <span class="nav-icon">☰</span>
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 7H18M4 11H18M4 15H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
         Settings
       </button>
     </div>
@@ -1299,6 +1615,49 @@
     let sessionStart = null;
 
     let hrv = 42, hr = 72, resp = 14, arousal = 35;
+
+    // ==================== ONBOARDING ====================
+    function initOnboarding() {
+      const dismissed = localStorage.getItem('regulate-onboarding-dismissed');
+      if (dismissed === 'true') {
+        const card = document.getElementById('onboarding-card');
+        if (card) card.style.display = 'none';
+      }
+    }
+    function dismissOnboarding() {
+      localStorage.setItem('regulate-onboarding-dismissed', 'true');
+      document.getElementById('onboarding-card').style.display = 'none';
+    }
+    function toggleOnboardingExpand() {
+      const expanded = document.getElementById('onboarding-expanded');
+      const chevron = document.getElementById('onboarding-chevron');
+      expanded.classList.toggle('open');
+      if (expanded.classList.contains('open')) {
+        chevron.style.transform = 'rotate(180deg)';
+        document.getElementById('onboarding-toggle').childNodes[0].textContent = 'Show less ';
+      } else {
+        chevron.style.transform = '';
+        document.getElementById('onboarding-toggle').childNodes[0].textContent = 'Learn more ';
+      }
+    }
+    initOnboarding();
+
+    // ==================== SESSION TRACKING ====================
+    function getWeeklySessionCount() {
+      const data = JSON.parse(localStorage.getItem('regulate-sessions') || '[]');
+      const now = Date.now();
+      const oneWeek = 7 * 24 * 60 * 60 * 1000;
+      return data.filter(ts => (now - ts) < oneWeek).length;
+    }
+    function recordSession() {
+      const data = JSON.parse(localStorage.getItem('regulate-sessions') || '[]');
+      data.push(Date.now());
+      // Keep only last 90 days
+      const ninetyDays = 90 * 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const cleaned = data.filter(ts => (now - ts) < ninetyDays);
+      localStorage.setItem('regulate-sessions', JSON.stringify(cleaned));
+    }
 
     // ==================== SCREEN MANAGEMENT ====================
     function showScreen(id) {
@@ -1344,12 +1703,19 @@
       showScreen('emotion');
     });
 
+    // Emotion cards — toggle behavior
     document.querySelectorAll('.emotion-card').forEach(card => {
       card.addEventListener('click', () => {
-        document.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        currentEmotion = card.dataset.emotion;
-        document.getElementById('btn-feel').disabled = false;
+        if (card.classList.contains('selected')) {
+          card.classList.remove('selected');
+          currentEmotion = '';
+          document.getElementById('btn-feel').disabled = true;
+        } else {
+          document.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          currentEmotion = card.dataset.emotion;
+          document.getElementById('btn-feel').disabled = false;
+        }
       });
     });
 
@@ -1367,16 +1733,34 @@
       showScreen('body');
     });
 
+    // Body scan — toggle selection with glow
     ['body-head', 'body-torso', 'body-chest', 'body-stomach', 'body-throat'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
         el.addEventListener('click', (e) => {
-          selectedBodyPart = id;
-          document.querySelectorAll('.body-outline *').forEach(p => {
-            if (p.style) p.style.fill = p.id ? 'var(--surface)' : '';
-          });
-          e.target.style.fill = 'rgba(108, 92, 231, 0.2)';
-          e.target.style.stroke = 'var(--accent)';
+          if (selectedBodyPart === id) {
+            // Deselect
+            el.classList.remove('body-part-selected');
+            el.style.fill = el.id === 'body-chest' || el.id === 'body-stomach' || el.id === 'body-throat' ? 'transparent' : 'var(--surface)';
+            el.style.stroke = 'var(--border)';
+            el.style.strokeWidth = '';
+            selectedBodyPart = '';
+          } else {
+            // Clear previous
+            document.querySelectorAll('.body-part-selected').forEach(p => {
+              p.classList.remove('body-part-selected');
+              if (p.id === 'body-chest' || p.id === 'body-stomach' || p.id === 'body-throat') {
+                p.style.fill = 'transparent';
+              } else {
+                p.style.fill = 'var(--surface)';
+              }
+              p.style.stroke = 'var(--border)';
+              p.style.strokeWidth = '';
+            });
+            // Select new
+            selectedBodyPart = id;
+            el.classList.add('body-part-selected');
+          }
         });
       }
     });
@@ -1518,7 +1902,7 @@
 
         document.getElementById('breathe-phase').textContent = phases[phaseIndex];
         document.getElementById('breathe-text').textContent =
-          phaseIndex === 0 ? 'In' : phaseIndex === 2 ? 'Out' : '···';
+          phaseIndex === 0 ? 'In' : phaseIndex === 2 ? 'Out' : '...';
 
         const arousalEl = document.getElementById('breathe-arousal-fill');
         const stateEl = document.getElementById('breathe-arousal-state');
@@ -1571,6 +1955,13 @@
         `You noticed sensation in your ${part}. Your HRV dropped when exploring ${currentEmotion.toLowerCase()}, indicating sympathetic activation. After breathwork, your system began returning to baseline.`;
 
       updateDuration();
+    }
+
+    // ==================== SESSION COMPLETE ====================
+    function completeSession() {
+      recordSession();
+      document.getElementById('stat-sessions').textContent = getWeeklySessionCount();
+      showScreen('complete');
     }
 
     // ==================== LEADER REFLECTION ====================
@@ -1651,9 +2042,11 @@
     }
 
     function leaderComplete() {
+      recordSession();
       document.getElementById('complete-icon').style.background = 'linear-gradient(135deg, var(--gold), #e6c675)';
       document.getElementById('complete-title').textContent = 'Check-in complete';
       document.getElementById('complete-message').textContent = 'You paused before deciding. That discipline compounds — over time, your ability to read your own signals gets sharper and faster.';
+      document.getElementById('stat-sessions').textContent = getWeeklySessionCount();
       showScreen('complete');
     }
 
@@ -1749,11 +2142,25 @@
       document.querySelectorAll('.signal-card').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('.stake-btn').forEach(b => b.classList.remove('selected'));
       document.querySelector('[data-stakes="medium"]').classList.add('selected');
+      // Clear body part selection
+      document.querySelectorAll('.body-part-selected').forEach(p => {
+        p.classList.remove('body-part-selected');
+        if (p.id === 'body-chest' || p.id === 'body-stomach' || p.id === 'body-throat') {
+          p.style.fill = 'transparent';
+        } else {
+          p.style.fill = 'var(--surface)';
+        }
+        p.style.stroke = 'var(--border)';
+        p.style.strokeWidth = '';
+      });
       document.getElementById('complete-icon').style.background = 'linear-gradient(135deg, var(--calm), #55efc4)';
       document.getElementById('complete-title').textContent = 'Session complete';
       simulateBioShift('calm');
       showScreen('mode');
     }
+
+    // Initialize session count display
+    document.getElementById('stat-sessions').textContent = getWeeklySessionCount() || '0';
   </script>
 </body>
 </html>
