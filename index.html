@@ -110,10 +110,10 @@
 
     /* Onboarding card */
     .onboarding-card {
-      background: var(--surface);
-      border: 1px solid var(--accent);
-      border-radius: 16px;
-      padding: 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
       margin-bottom: 24px;
       position: relative;
     }
@@ -360,6 +360,67 @@
       border-color: var(--gold);
       color: var(--text);
       background: rgba(212, 168, 85, 0.1);
+    }
+
+    /* ===== HOME BIOMETRIC STRIP ===== */
+    .home-bio-strip {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 20px;
+      margin-bottom: 16px;
+    }
+    .home-bio-item {
+      flex: 1;
+      text-align: center;
+    }
+    .home-bio-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+    .home-bio-unit {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-left: 2px;
+    }
+    .home-bio-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .home-bio-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+    .home-bio-state-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+    .home-bio-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--calm);
+      box-shadow: 0 0 6px var(--calm);
+      flex-shrink: 0;
+    }
+    .home-bio-state {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--calm);
     }
 
     /* ===== PRACTICE MODE CARDS (regulate / inquire) ===== */
@@ -1134,31 +1195,26 @@
       </div>
 
       <div class="scrollable">
-        <!-- Onboarding card -->
-        <div class="onboarding-card" id="onboarding-card">
-          <div class="onboarding-header">
-            <div class="onboarding-main-text">
-              Regulate helps you expand your window of tolerance — your capacity to experience difficult emotions without being overwhelmed or shutting down. Each session builds this capacity.
-            </div>
-            <button class="onboarding-dismiss" onclick="dismissOnboarding()" aria-label="Dismiss">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </button>
+        <div class="greeting">What's showing up?</div>
+        <div class="subtitle">Build the capacity to feel without being overwhelmed.</div>
+
+        <!-- Compact biometric strip -->
+        <div class="home-bio-strip" id="home-bio-strip">
+          <div class="home-bio-item">
+            <div class="home-bio-value" id="home-hrv-value">42<span class="home-bio-unit">ms</span></div>
+            <div class="home-bio-label">HRV</div>
           </div>
-          <button class="onboarding-toggle" id="onboarding-toggle" onclick="toggleOnboardingExpand()">
-            Learn more
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" id="onboarding-chevron">
-              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="onboarding-expanded" id="onboarding-expanded">
-            When we encounter emotions we've learned to avoid, our nervous system reacts — fight, flight, or freeze. By practicing noticing these sensations and staying present with them, you gradually widen the range of experiences you can handle while remaining grounded. This is how lasting emotional resilience is built.
+          <div class="home-bio-divider"></div>
+          <div class="home-bio-item">
+            <div class="home-bio-value" id="home-hr-value">72<span class="home-bio-unit">bpm</span></div>
+            <div class="home-bio-label">Heart rate</div>
+          </div>
+          <div class="home-bio-divider"></div>
+          <div class="home-bio-state-wrap">
+            <div class="home-bio-dot" id="home-bio-dot"></div>
+            <div class="home-bio-state" id="home-bio-state">Regulated</div>
           </div>
         </div>
-
-        <div class="greeting">What's showing up?</div>
-        <div class="subtitle">How do you want to work with it?</div>
 
         <div class="practice-mode-grid">
           <div class="practice-card practice-regulate" id="practice-regulate">
@@ -1190,6 +1246,19 @@
 
         <div class="adventure-link">
           <button id="btn-adventure">Take me where I need to go</button>
+        </div>
+
+        <!-- Learn more at bottom -->
+        <div class="onboarding-card" id="onboarding-card" style="margin-top: 8px;">
+          <button class="onboarding-toggle" id="onboarding-toggle" onclick="toggleOnboardingExpand()" style="color: var(--text-muted); font-size: 12px;">
+            What is window of tolerance?
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" id="onboarding-chevron">
+              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="onboarding-expanded" id="onboarding-expanded">
+            Your window of tolerance is the zone where you can feel difficult emotions without being overwhelmed or shutting down. When we encounter feelings we've learned to avoid, the nervous system reacts — fight, flight, or freeze. Each session here builds your capacity to stay present with more of your experience. That's emotional resilience.
+          </div>
         </div>
       </div>
     </div>
@@ -1777,27 +1846,19 @@
     let hrv = 42, hr = 72, resp = 14, arousal = 35;
 
     // ==================== ONBOARDING ====================
-    function initOnboarding() {
-      const dismissed = localStorage.getItem('regulate-onboarding-dismissed');
-      if (dismissed === 'true') {
-        const card = document.getElementById('onboarding-card');
-        if (card) card.style.display = 'none';
-      }
-    }
-    function dismissOnboarding() {
-      localStorage.setItem('regulate-onboarding-dismissed', 'true');
-      document.getElementById('onboarding-card').style.display = 'none';
-    }
+    function initOnboarding() { /* no-op — card now always visible at bottom */ }
+    function dismissOnboarding() { /* removed */ }
     function toggleOnboardingExpand() {
       const expanded = document.getElementById('onboarding-expanded');
       const chevron = document.getElementById('onboarding-chevron');
       expanded.classList.toggle('open');
+      const toggle = document.getElementById('onboarding-toggle');
       if (expanded.classList.contains('open')) {
         chevron.style.transform = 'rotate(180deg)';
-        document.getElementById('onboarding-toggle').childNodes[0].textContent = 'Show less ';
+        toggle.childNodes[0].textContent = 'Show less ';
       } else {
         chevron.style.transform = '';
-        document.getElementById('onboarding-toggle').childNodes[0].textContent = 'Learn more ';
+        toggle.childNodes[0].textContent = 'What is window of tolerance? ';
       }
     }
     initOnboarding();
@@ -2273,21 +2334,34 @@
       document.getElementById('hr-value').innerHTML = `${hr} <span class="metric-unit">bpm</span>`;
       document.getElementById('resp-value').innerHTML = `${resp} <span class="metric-unit">/m</span>`;
 
+      // Update home strip
+      document.getElementById('home-hrv-value').innerHTML = `${hrv}<span class="home-bio-unit">ms</span>`;
+      document.getElementById('home-hr-value').innerHTML = `${hr}<span class="home-bio-unit">bpm</span>`;
+
       const fill = document.getElementById('arousal-fill');
       const state = document.getElementById('arousal-state');
       fill.style.width = arousal + '%';
+
+      let stateLabel, stateColor;
       if (arousal > 55) {
-        fill.style.background = 'var(--alert)';
-        state.style.color = 'var(--alert)';
-        state.textContent = 'Activated';
+        stateLabel = 'Activated'; stateColor = 'var(--alert)';
       } else if (arousal > 35) {
-        fill.style.background = 'var(--warm)';
-        state.style.color = 'var(--warm)';
-        state.textContent = 'Alert';
+        stateLabel = 'Alert'; stateColor = 'var(--warm)';
       } else {
-        fill.style.background = 'var(--calm)';
-        state.style.color = 'var(--calm)';
-        state.textContent = 'Regulated';
+        stateLabel = 'Regulated'; stateColor = 'var(--calm)';
+      }
+      fill.style.background = stateColor;
+      state.style.color = stateColor;
+      state.textContent = stateLabel;
+
+      // Home strip state dot + label
+      const dot = document.getElementById('home-bio-dot');
+      const homeState = document.getElementById('home-bio-state');
+      if (dot && homeState) {
+        dot.style.background = stateColor;
+        dot.style.boxShadow = `0 0 6px ${stateColor}`;
+        homeState.style.color = stateColor;
+        homeState.textContent = stateLabel;
       }
     }
 
