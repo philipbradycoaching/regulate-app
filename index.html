@@ -362,6 +362,92 @@
       background: rgba(212, 168, 85, 0.1);
     }
 
+    /* ===== PRACTICE MODE CARDS (regulate / inquire) ===== */
+    .practice-mode-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 8px 0 20px;
+    }
+    .practice-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      text-align: left;
+    }
+    .practice-card:hover {
+      transform: translateY(-2px);
+    }
+    .practice-card.practice-regulate {
+      border-color: transparent;
+    }
+    .practice-card.practice-regulate:hover, .practice-card.practice-regulate.selected {
+      border-color: var(--accent);
+      background: rgba(108, 92, 231, 0.08);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .practice-card.practice-inquire {
+      border-color: transparent;
+    }
+    .practice-card.practice-inquire:hover, .practice-card.practice-inquire.selected {
+      border-color: var(--calm);
+      background: rgba(0, 184, 148, 0.08);
+      box-shadow: 0 0 20px var(--calm-glow);
+    }
+    .practice-card-icon {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .practice-regulate .practice-card-icon { background: rgba(108, 92, 231, 0.15); }
+    .practice-inquire .practice-card-icon  { background: rgba(0, 184, 148, 0.15); }
+    .practice-card-text { flex: 1; }
+    .practice-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .practice-card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .adventure-link {
+      text-align: center;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+    .adventure-link button {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .adventure-link button:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+    .btn-calm {
+      background: linear-gradient(135deg, var(--calm), #00cec9);
+    }
+    .btn-calm:hover { background: linear-gradient(135deg, #00cec9, var(--calm)); }
+
     .btn-primary {
       width: 100%;
       padding: 18px;
@@ -1072,10 +1158,52 @@
         </div>
 
         <div class="greeting">What's showing up?</div>
-        <div class="subtitle">Name a challenge, and we'll explore what's underneath it together.</div>
+        <div class="subtitle">How do you want to work with it?</div>
 
+        <div class="practice-mode-grid">
+          <div class="practice-card practice-regulate" id="practice-regulate">
+            <div class="practice-card-icon">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 3v16M3 11h16" stroke="#6c5ce7" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="11" cy="11" r="4" stroke="#6c5ce7" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="practice-card-text">
+              <div class="practice-card-title">Regulate</div>
+              <div class="practice-card-desc">Something is getting in the way — procrastination, overwhelm, anger. Work through it and return to centre.</div>
+            </div>
+          </div>
+          <div class="practice-card practice-inquire" id="practice-inquire">
+            <div class="practice-card-icon">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="7" stroke="#00b894" stroke-width="1.5"/>
+                <path d="M11 8v1.5M11 13v.5" stroke="#00b894" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="11" cy="11.5" r="0.5" fill="#00b894"/>
+              </svg>
+            </div>
+            <div class="practice-card-text">
+              <div class="practice-card-title">Inquire</div>
+              <div class="practice-card-desc">Something is present — grief, longing, fear, even joy. Sit with it. Get curious about what it's telling you.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adventure-link">
+          <button id="btn-adventure">Take me where I need to go</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PERSONAL: REGULATE (challenge entry) ==================== -->
+    <div class="screen" id="screen-regulate-entry">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('home')">← Back</button>
+        <div class="logo">regulate</div>
+      </div>
+      <div class="scrollable">
+        <div class="greeting" style="font-size:22px">What's in the way?</div>
+        <div class="subtitle">Name the challenge. We'll find what's underneath it.</div>
         <div class="prompt-section">
-          <div class="section-label">What's the challenge?</div>
           <div class="challenge-input-wrap">
             <input type="text" class="challenge-input" id="challenge-input"
               placeholder="e.g. I keep putting off this conversation...">
@@ -1086,12 +1214,44 @@
             <div class="tag" data-challenge="People pleasing">People pleasing</div>
             <div class="tag" data-challenge="Avoidance">Avoidance</div>
             <div class="tag" data-challenge="Perfectionism">Perfectionism</div>
+            <div class="tag" data-challenge="Overwhelm">Overwhelm</div>
             <div class="tag" data-challenge="Anger">Anger</div>
+            <div class="tag" data-challenge="Fatigue">Fatigue</div>
+            <div class="tag" data-challenge="Anxiety">Anxiety</div>
           </div>
         </div>
       </div>
       <button class="btn-primary" id="btn-explore" disabled>Explore this</button>
     </div>
+
+    <!-- ==================== PERSONAL: INQUIRE (sensation entry) ==================== -->
+    <div class="screen" id="screen-inquire-entry">
+      <div class="header">
+        <button class="back-btn" onclick="showScreen('home')">← Back</button>
+        <div class="logo">regulate</div>
+      </div>
+      <div class="scrollable">
+        <div class="greeting" style="font-size:22px">What's present?</div>
+        <div class="subtitle">No need to fix or explain it. Just notice what's here.</div>
+        <div class="prompt-section">
+          <div class="challenge-input-wrap">
+            <input type="text" class="challenge-input" id="inquire-input"
+              placeholder="e.g. A heaviness in my chest...">
+          </div>
+          <div class="quick-tags" id="inquire-tags">
+            <div class="tag inquire-tag" data-inquiry="Grief">Grief</div>
+            <div class="tag inquire-tag" data-inquiry="Longing">Longing</div>
+            <div class="tag inquire-tag" data-inquiry="Fear">Fear</div>
+            <div class="tag inquire-tag" data-inquiry="Anger">Anger</div>
+            <div class="tag inquire-tag" data-inquiry="Sadness">Sadness</div>
+            <div class="tag inquire-tag" data-inquiry="Joy">Joy</div>
+            <div class="tag inquire-tag" data-inquiry="Confusion">Confusion</div>
+            <div class="tag inquire-tag" data-inquiry="Loneliness">Loneliness</div>
+            <div class="tag inquire-tag" data-inquiry="Shame">Shame</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary btn-calm" id="btn-inquire" disabled>Be with this</button>
 
     <!-- ==================== PERSONAL: EMOTION ==================== -->
     <div class="screen" id="screen-emotion">
@@ -1678,8 +1838,19 @@
       });
     });
 
-    // ==================== PERSONAL FLOW ====================
-    // Quick tags
+    // ==================== PRACTICE MODE SELECTION ====================
+    document.getElementById('practice-regulate').addEventListener('click', () => {
+      showScreen('regulate-entry');
+    });
+    document.getElementById('practice-inquire').addEventListener('click', () => {
+      showScreen('inquire-entry');
+    });
+    document.getElementById('btn-adventure').addEventListener('click', () => {
+      // Pick randomly between the two modes
+      showScreen(Math.random() < 0.5 ? 'regulate-entry' : 'inquire-entry');
+    });
+
+    // ==================== PERSONAL FLOW: REGULATE ====================
     document.querySelectorAll('#personal-tags .tag').forEach(tag => {
       tag.addEventListener('click', () => {
         document.querySelectorAll('#personal-tags .tag').forEach(t => t.classList.remove('selected'));
@@ -1700,6 +1871,30 @@
       document.getElementById('emotion-prompt').textContent =
         `When you think about "${currentChallenge.toLowerCase()}"...`;
       simulateBioShift('elevated');
+      showScreen('emotion');
+    });
+
+    // ==================== PERSONAL FLOW: INQUIRE ====================
+    document.querySelectorAll('#inquire-tags .inquire-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        document.querySelectorAll('#inquire-tags .inquire-tag').forEach(t => t.classList.remove('selected'));
+        tag.classList.add('selected');
+        document.getElementById('inquire-input').value = tag.dataset.inquiry;
+        document.getElementById('btn-inquire').disabled = false;
+      });
+    });
+
+    const inquireInput = document.getElementById('inquire-input');
+    inquireInput.addEventListener('input', () => {
+      document.getElementById('btn-inquire').disabled = !inquireInput.value.trim();
+      document.querySelectorAll('#inquire-tags .inquire-tag').forEach(t => t.classList.remove('selected'));
+    });
+
+    document.getElementById('btn-inquire').addEventListener('click', () => {
+      currentChallenge = inquireInput.value.trim();
+      document.getElementById('emotion-prompt').textContent =
+        `You're sitting with "${currentChallenge.toLowerCase()}"...`;
+      simulateBioShift('calm');
       showScreen('emotion');
     });
 
@@ -2126,8 +2321,10 @@
       currentSignal = '';
       currentBodyLoc = '';
       challengeInput.value = '';
+      inquireInput.value = '';
       decisionInput.value = '';
       document.getElementById('btn-explore').disabled = true;
+      document.getElementById('btn-inquire').disabled = true;
       document.getElementById('btn-feel').disabled = true;
       document.getElementById('btn-checkin').disabled = true;
       document.getElementById('btn-center').disabled = true;
